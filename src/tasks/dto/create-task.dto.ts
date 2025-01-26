@@ -1,4 +1,5 @@
-import { IsISO8601, IsNotEmpty, IsString } from 'class-validator';
+import { Priority } from '@prisma/client';
+import { IsEnum, IsISO8601, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateTaskDto {
   @IsNotEmpty()
@@ -10,11 +11,6 @@ export class CreateTaskDto {
   date: string;
 
   @IsNotEmpty()
-  @IsString()
-  priority: string;
-
-  @IsNotEmpty()
-  createdAt: string;
-
-  updatedAt: string;
+  @IsEnum(Priority)
+  priority: Priority;
 }

@@ -21,11 +21,17 @@ model User {
   createdAt DateTime @default(now())
 }
 
+enum Priority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
 model Task {
   id          Int      @id @default(autoincrement())
   description String
   date        DateTime
-  priority    String
+  priority    Priority
   completed   Boolean  @default(false)
   pinned      Boolean  @default(false)
   createdAt   DateTime @default(now())

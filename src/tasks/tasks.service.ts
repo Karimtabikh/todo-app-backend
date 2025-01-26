@@ -22,6 +22,58 @@ export class TasksService {
     return plainToInstance(TaskEntity, tasks);
   }
 
+  async findPaginatedTasks(page: number, sortBy?: string, searchTerm?: string) {
+    const skip = 3 * page;
+    let orderBy: any = [{ date: 'asc' }, { priority: 'asc' }];
+
+    if (sortBy) {
+      switch (sortBy) {
+        case 'priority':
+          orderBy = { priority: 'asc' };
+          break;
+        case 'date':
+          orderBy = { date: 'asc' };
+          break;
+        case 'completion':
+          orderBy = { completed: 'desc' };
+          break;
+        default:
+          break;
+      }
+    }
+
+    const where = searchTerm
+      ? {
+          description: {
+            contains: searchTerm,
+          },
+        }
+      : {};
+
+    const pinnedTasks = await this.prisma.task.findMany({
+      where: { pinned: true, ...where },
+    });
+
+    const nonPinnedTasks = await this.prisma.task.findMany({
+      skip,
+      take: 6 - pinnedTasks.length,
+      where: { pinned: false, ...where },
+      orderBy,
+    });
+
+    const tasks = [...pinnedTasks, ...nonPinnedTasks];
+
+    const totalCount = await this.prisma.task.count({ where });
+    const hasMore = skip + 6 < totalCount;
+    const totalPages = Math.ceil(totalCount / 6);
+
+    return {
+      tasks: plainToInstance(TaskEntity, tasks),
+      hasMore,
+      totalPages,
+    };
+  }
+
   findOne(id: number) {
     return `This action returns a #${id} task`;
   }
@@ -29,7 +81,7 @@ export class TasksService {
   update(id: number, updateTaskDto: UpdateTaskDto) {
     const formattedDateData = {
       ...updateTaskDto,
-      date: new Date(updateTaskDto.date),
+      date: updateTaskDto.date ? new Date(updateTaskDto.date) : undefined,
     };
     return this.prisma.task.update({
       where: {

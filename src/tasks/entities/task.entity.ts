@@ -1,4 +1,4 @@
-import { Task } from '@prisma/client';
+import { Priority, Task } from '@prisma/client';
 import { Exclude, Expose, Transform } from 'class-transformer';
 
 export class TaskEntity implements Task {
@@ -14,12 +14,12 @@ export class TaskEntity implements Task {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
+    return `${day}/${month}/${year}`;
   })
   date: Date;
 
   @Expose()
-  priority: string;
+  priority: Priority;
 
   @Expose()
   completed: boolean;

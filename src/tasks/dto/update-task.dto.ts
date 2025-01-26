@@ -1,6 +1,7 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateTaskDto } from './create-task.dto';
-import { IsISO8601, IsNotEmpty, IsString } from 'class-validator';
+import { IsEnum, IsISO8601, IsNotEmpty, IsString } from 'class-validator';
+import { Priority } from '@prisma/client';
 
 export class UpdateTaskDto extends PartialType(CreateTaskDto) {
   @IsNotEmpty()
@@ -12,8 +13,8 @@ export class UpdateTaskDto extends PartialType(CreateTaskDto) {
   date: string;
 
   @IsNotEmpty()
-  @IsString()
-  priority: string;
+  @IsEnum(Priority)
+  priority: Priority;
 
   @IsNotEmpty()
   createdAt: string;
