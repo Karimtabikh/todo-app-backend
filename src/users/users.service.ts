@@ -35,6 +35,12 @@ export class UsersService {
     });
   }
 
+  async findByEmail(email: string) {
+    return this.prisma.user.findFirst({
+      where: { email },
+    });
+  }
+
   async validateUser(body: { email: string; password: string }) {
     const email = body.email;
     const password = body.password;
